@@ -12,7 +12,7 @@ const map = new maplibregl.Map({
 
 
 // 2050
-fetch('https://newsday.carto.com/api/v2/sql?api_key=KX0PHwIl-egHMqmINEHNUg&q=SELECT cartodb_id,ST_AsGeoJSON(the_geom) as the_geom FROM nextli_floodplain_30inch')
+fetch('https://newsday.carto.com/api/v2/sql?api_key=get-your-own-api-key&q=SELECT cartodb_id,ST_AsGeoJSON(the_geom) as the_geom FROM nextli_floodplain_30inch')
         .then(response => {
             if (response.ok) {
                 console.log("It's working!!!")
