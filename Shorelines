@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Fly to a location based on scroll position</title>
+    <meta property="og:description" content="Scroll down through the story and the map will fly to the chapter's location." />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@4.1.1/dist/maplibre-gl.css' />
+    <script src='https://unpkg.com/maplibre-gl@4.1.1/dist/maplibre-gl.js'></script>
+    <script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/v4.0.0-beta.25/carto.min.js"></script>
+    
+    <script src="https://unpkg.com/deck.gl@^8.8.0/dist.min.js"></script>
+    <script src="https://unpkg.com/@deck.gl/carto@^8.8.0/dist.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+    </style>
+</head>
+<body>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
 
+    #map {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+
+    #features {
+        position: absolute;
+        top: 500%;
+        left: 50%;
+        right: 50%;
+        transform: translate(-50%, -60%);
+        width: 80%;
+        font-family: sans-serif;
+        overflow-y: scroll;
+        background-color: transparent;
+    }
+    .chapter-box {
+        /* margin: 10px; /* Add some margin to create space between boxes */
+        /* padding: 10px; Add some padding for content inside the box */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.0); /* Optional: Add a shadow for a 3D effect */
+    }
+    .box {
+    border: 1px solid #000;
+    padding: 10px;
+    margin: 10px 0;
+    }
+    section {
+        padding: 5% 5%;
+        line-height: 25px;
+        border-bottom: 150px;
+        /* width: 80%; */
+        opacity: 0.9;
+        font-size: 13px;
+        margin-bottom: 80%;
+        background-color: white;
+    }
+    section.active {
+        opacity: 0.9;
+    }
+    section:last-child {
+        border-bottom: none;
+        margin-bottom: 1000px;
+    }
+</style>
+
+<div id="map"></div>
+<div id="features">
+    <section id="longIsland" class="active">
+        <h3>Long Island</h3>
+        <p>
+            But what does this mean for Long Island's 1,600 miles of vulnerable shorelines?
+        </p>
+        <p>
+            This map combines NYSERDA's 100-year floodplain data along with NOAA's future predictions 
+            for the Northeast region of the United States, and takes a close look at regions 
+            that will likely experience severe flooding by 2050.
+        </p>
+    </section>
+    <section id="mastic">
+        <h3>Mastic Beach</h3>
+        <p>
+            Such as Mastic Beach. A home purchased in the shaded areas in 2020 
+            could have as much as a 26% chance of experiencing at least one flood during 
+            the 30-year mortgage period. 
+        </p></section>
+    <section id="mastic2">
+        <p>
+            By 2100, that could rise to 45% and include hundreds more homes and buildings.
+            </p></section>
+    <section id="mastic3">
+        <p>
+            In the last decade, the Town of Brookhaven bought out around 300 parcels of land 
+            to restore the surrounding salt marsh and has abandoned roadways that are at sea 
+            level.
+        </p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/wCZz6IST8fw?si=RM_bj6Q11AlzS1Br" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </section>
+    <section id="longbeach">
+        <h3>Long Beach</h3>
+        <p>
+            To estimate the probability of flooding in the future, scientists look to the past. 
+            The frequency of historic flooding events alongside future climate change predictions 
+            help understand how susceptible a neighborhood is to flooding.
+        </p>
+    </section>
+    <section id="longbeach2">
+        <p>
+            As a half mile wide barrier island, the entire City of Long Beach is already severely 
+            susceptible. Long Beach has undergone a $230 million shoreline storm protection project 
+            since Superstorm Sandy in 2013, that included creating 16-foot-tall dunes, 1.2 million 
+            tons of sand and 15 jetties. These measures are largely temporary.
+        </p>
+    </section>
+    <section id="montauk">
+        <h3>Montauk</h3>
+        <p>
+            Over the next several decades, about $1.5 billion of federal funding will be 
+            spent on replenishing Long Island's shores through the 'Fire-Island to Montauk 
+            Project'.
+        </p>
+    </section>
+    <section id="montauk2">
+        <p>
+            The U.S. Army Corps of Engineers has already dredged about 475,000 cubic yards of offshore 
+            sand to the beach stretch from Kirk Park Beach to South Edison Beach. This narrow 
+            floodplain area is highly susceptible to where Napeague Bay could spill over state 
+            Route 27, cutting Montauk off from the rest of Long Island.
+        </p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/wCZz6IST8fw?si=RM_bj6Q11AlzS1Br" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </section>
+    <section id="northshore">
+        <h3>North Shore</h3>
+        <p>
+            Long Island's northern coastline sits at higher elevation than the south shore, 
+            but is still vulnerable to storm surge-induced flooding and bluff erosion, 
+            threatening to collapse buildings and homes.
+        </p>
+    </section>
+    <section id="northshore2">
+        <p>
+            In Port Jefferson there is an ongoing $10 million effort to stem erosion with 
+            plans to construct a wall on top of the bluff that would divert stormwater away 
+            from the cliff.
+        </p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/wCZz6IST8fw?si=RM_bj6Q11AlzS1Br" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </section>
+</div>
+<script src="map.js"></script>
+</body>
+</html>
